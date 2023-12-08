@@ -46,8 +46,8 @@ module Regs (
     always @(*) begin
         case (icode)
             4'h2, 4'h5, 4'h4, 4'h6: begin
-                valA <= Register[rA];
-                valB <= Register[rB];
+                valA <= Register[rA];  // rA
+                valB <= Register[rB];  // rB
             end
             4'h8, 4'h9, 4'hB: begin
                 valA <= Register[4];  // %rsp

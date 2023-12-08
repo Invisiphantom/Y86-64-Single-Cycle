@@ -5,10 +5,14 @@ module MemControl (
 );
     always @(icode) begin
         case (icode)
+            // 需要写入内存
+            // rmmovq, call, pushq
             4'h4, 4'h8, 4'hA: begin
                 memWrite = 1'b1;
                 memRead  = 1'b0;
             end
+            // 需要读取内存
+            // mrmovq, ret, popq
             4'h5, 4'h9, 4'hB: begin
                 memWrite = 1'b0;
                 memRead  = 1'b1;

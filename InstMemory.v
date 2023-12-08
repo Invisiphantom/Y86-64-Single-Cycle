@@ -5,15 +5,20 @@ module InstMemory (
     output reg [ 3:0] ifun,
     output reg [ 3:0] rA,
     output reg [ 3:0] rB,
-    output     [63:0] valC
+    output     [63:0] valC,
+    output reg        instr_valid
 );
+    // 总共1024字节的内存空间
+    parameter MEM_SIZE = 1024;
+    reg [7:0] inst_mem[0:MEM_SIZE-1];
+    // 使用ROMreplace.py修改至当前绝对路径
+    initial $readmemh("/home/ethan/Y86-64-Single-Cycle/ROM.txt", inst_mem);
+    initial instr_valid = 1'b1;
 
-    reg [7:0] inst_mem[0:1023];  // 最多能存 1024 字节的指令
-    // 只能用绝对路径
-    initial $readmemh("/home/ethan/CPU-Table/Y86-64-Single-Cycle/ROM.txt", inst_mem);
 
     wire [79:0] instruction;
-    assign instruction[79:0] = (stat == 3'b001) ? {
+    assign instruction[79:0] =
+        (stat == 3'b001) ? {
         inst_mem[PCaddress],
         inst_mem[PCaddress+1],
         inst_mem[PCaddress+2],
@@ -24,15 +29,17 @@ module InstMemory (
         inst_mem[PCaddress+7],
         inst_mem[PCaddress+8],
         inst_mem[PCaddress+9]
-    } : {80{1'bx}};
+    } : {80{1'bx}}; // 如果出现异常，则停止取指
 
-    reg [63:0] valC_litend;
+    reg [63:0] valC_litend;  // 小端法存储的立即数
 
     always @(*) begin
         icode = instruction[79:76]; // 4 bits
         ifun  = instruction[75:72]; // 4 bits
         rA    = instruction[71:68]; // 4 bits
         rB    = instruction[67:64]; // 4 bits
+        if (icode > 4'hC) instr_valid = 1'b0;  // 不合法指令
+        else instr_valid = 1'b1;
 
         case (icode)
             4'd3, 4'd4, 4'd5: valC_litend = instruction[63:0];  // irmovq, rmmovq, mrmovq
@@ -41,7 +48,7 @@ module InstMemory (
         endcase
     end
 
-    // 小端法读取数据
+    // 转换小端法存储的数据
     assign valC = {
         valC_litend[7:0],
         valC_litend[15:8],

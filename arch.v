@@ -27,14 +27,16 @@ module arch (
     wire [63:0] valC;
     assign pIcode = icode;
     assign pValC  = valC;
+    wire instr_valid;
     InstMemory u_InstMemory (
-        .PCaddress(PCaddress),
-        .stat     (stat),
-        .icode    (icode),
-        .ifun     (ifun),
-        .rA       (rA),
-        .rB       (rB),
-        .valC     (valC)
+        .PCaddress  (PCaddress),
+        .stat       (stat),
+        .icode      (icode),
+        .ifun       (ifun),
+        .rA         (rA),
+        .rB         (rB),
+        .valC       (valC),
+        .instr_valid(instr_valid)
     );
 
 
@@ -159,7 +161,7 @@ module arch (
         .dmem_error(dmem_error)
     );
 
-    wire instr_valid, imem_error;
+    wire imem_error;
 
     Stat u_Stat (
         .icode      (icode),
@@ -171,12 +173,12 @@ module arch (
 endmodule
 
 
-
 module arch_tb;
     reg clk;
 
     arch arch_inst (.clk(clk));
 
+    // 监视PCaddress地址，寄存器状态，标志位状态，CPU运行时状态
     initial begin
         $monitor("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
                  arch_tb.arch_inst.PCaddress, arch_tb.arch_inst.rax, arch_tb.arch_inst.rcx,

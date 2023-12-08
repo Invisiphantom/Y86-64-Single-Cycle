@@ -1,4 +1,0 @@
-ERROR: /home/ethan/Y86-64-Single-Cycle/InstMemory.v:13: $readmemh: Unable to open /home/ethan/CPU-Table/Y86-64-Single-Cycle/ROM.txt for reading.
-ERROR: /home/ethan/Y86-64-Single-Cycle/Mem.v:12: $readmemh: Unable to open /home/ethan/CPU-Table/Y86-64-Single-Cycle/ROM.txt for reading.
-VCD info: dumpfile wave.vcd opened for output.
-                   0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0                    0 1 0 0 1

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 比较Y86-output文件夹和Y86-answer文件夹中的内容是否相同
 import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))

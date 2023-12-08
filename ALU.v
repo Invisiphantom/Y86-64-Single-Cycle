@@ -5,9 +5,9 @@ module ALU (
     input [63:0] aluA,
     input [63:0] aluB,
     output reg [63:0] valE,
-    output reg ZF,
-    output reg SF,
-    output reg OF
+    output reg ZF,  // zero flag
+    output reg SF,  // sign flag
+    output reg OF  // overflow flag
 );
     initial begin
         valE = 64'b0;

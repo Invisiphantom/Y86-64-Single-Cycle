@@ -6,7 +6,9 @@ module MemData (
 );
     always @(*) begin
         case (icode)
+            // call
             4'h8: memData = valP;
+            // rmmovq, pushq
             4'h4, 4'hA: memData = valA;
         endcase
     end

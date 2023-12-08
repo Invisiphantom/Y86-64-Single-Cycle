@@ -1,9 +1,9 @@
 module CC (
     input [3:0] ifun,
-    input ZF,
-    input SF,
-    input OF,
-    output reg Cnd
+    input ZF, // zero flag
+    input SF, // sign flag
+    input OF, // overflow flag
+    output reg Cnd // condition code
 );
     always @(*) begin
         case (ifun)

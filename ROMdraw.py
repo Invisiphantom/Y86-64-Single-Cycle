@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# 读取ROM.yo文件，将其中的指令转换为ROM.txt和ROM_M.txt文件中的指令
+# 读取ROM.yo文件，将其中的汇编指令转换为ROM.txt和ROM_M.txt文件中的字节编码
 import os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
