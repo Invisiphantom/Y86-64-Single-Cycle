@@ -1,7 +1,7 @@
 Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)   
 项目源代码：[Invisiphantom/Y86-64-Single-Cycle](https://github.com/Invisiphantom/Y86-64-Single-Cycle)  
-环境配置博客：[IVerilog+VSCode环境配置 | Mind City](https://invisiphantom.github.io/Skill/IVerilog+VSCode%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)   
-项目解析博文：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/) 
+项目环境配置：[IVerilog+VSCode环境配置 | Mind City](https://invisiphantom.github.io/Skill/IVerilog+VSCode%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)   
+项目代码解析：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/) 
 
 - 相关项目
   - RISC-V单周期CPU：[Invisiphantom/RISC-V-SIngle-Cycle](https://github.com/Invisiphantom/RISC-V-SIngle-Cycle) 
