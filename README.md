@@ -1,6 +1,10 @@
-Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)
-环境配置参见博客：[IVerilog+VSCode环境配置 | Mind City](https://invisiphantom.github.io/Skill/IVerilog+VSCode%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)
+Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)   
+项目源代码参见：[Invisiphantom/Y86-64-Single-Cycle](https://github.com/Invisiphantom/Y86-64-Single-Cycle)  
+环境配置参见博客：[IVerilog+VSCode环境配置 | Mind City](https://invisiphantom.github.io/Skill/IVerilog+VSCode%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)   
+项目解析参见博文：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/) 
 
+RISC-V单周期CPU源码参见：[Invisiphantom/RISC-V-SIngle-Cycle](https://github.com/Invisiphantom/RISC-V-SIngle-Cycle)
+RISC-V流水线CPU源码参见：[Invisiphantom/RISC-V-Pipeline](https://github.com/Invisiphantom/RISC-V-Pipeline)
 ### 整体架构图(csapp P460)
 ![](img/Y86-64单周期CPU设计.png)
 - PC: 选择PCaddress的更新方式(累加or跳转)
@@ -806,7 +810,7 @@ module arch_tb;
 endmodule
 ```
 
-### 使用Python脚本格式化输入输出
+### 使用Python脚本自动格式化输入输出
 
 > 使用方式：打开Y86-output-batch.py文件，使用`Ctrl+Alt+N`快速执行代码，如果测试输出与答案完全匹配，则终端输出`All tests passed!`
 
