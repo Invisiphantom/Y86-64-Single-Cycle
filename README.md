@@ -4,8 +4,8 @@ Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)
 项目解析参见博文：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/) 
 
 - 相关项目
-	RISC-V单周期CPU源码参见：[Invisiphantom/RISC-V-SIngle-Cycle](https://github.com/Invisiphantom/RISC-V-SIngle-Cycle) 
-	RISC-V流水线CPU源码参见：[Invisiphantom/RISC-V-Pipeline](https://github.com/Invisiphantom/RISC-V-Pipeline) 
+  - RISC-V单周期CPU源码参见：[Invisiphantom/RISC-V-SIngle-Cycle](https://github.com/Invisiphantom/RISC-V-SIngle-Cycle) 
+  - RISC-V流水线CPU源码参见：[Invisiphantom/RISC-V-Pipeline](https://github.com/Invisiphantom/RISC-V-Pipeline) 
 ### 整体架构图(csapp P460)
 ![](img/Y86-64单周期CPU设计.png)
 - PC: 选择PCaddress的更新方式(累加or跳转)
