@@ -27,5 +27,7 @@ for output_file in output_files:
             + output_file.replace(".yml", "")
         )
 
-if error == False:
+if error == True:
+    print("Test failed!")
+else:
     print("All tests passed!")

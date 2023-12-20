@@ -2,7 +2,9 @@
 # 读取ROM.yo文件，将其中的汇编指令转换为ROM.txt和ROM_M.txt文件中的字节编码
 import os
 
+# 将工作目录切换至当前文件所在目录
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 files = os.listdir(".")
 yo_files = [file for file in files if file.endswith(".yo")]
 

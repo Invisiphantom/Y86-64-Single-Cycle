@@ -8,9 +8,10 @@ module InstMemory (
     output     [63:0] valC,
     output reg        instr_valid
 );
-    // 总共1024字节的内存空间
+    // 总共1024字节的内存空间 
     parameter MEM_SIZE = 1024;
     reg [7:0] inst_mem[0:MEM_SIZE-1];
+    
     // 使用ROMreplace.py修改至当前绝对路径
     initial $readmemh("/home/ethan/Y86-64-Single-Cycle/ROM.txt", inst_mem);
     initial instr_valid = 1'b1;
@@ -21,7 +22,7 @@ module InstMemory (
         (stat == 3'b001) ? {
         inst_mem[PCaddress],
         inst_mem[PCaddress+1],
-        inst_mem[PCaddress+2],
+        inst_mem[PCaddress+2],   
         inst_mem[PCaddress+3],
         inst_mem[PCaddress+4],
         inst_mem[PCaddress+5],

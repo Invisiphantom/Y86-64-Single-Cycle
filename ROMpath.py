@@ -3,6 +3,7 @@
 import os
 import re
 
+# 将工作目录切换至当前文件所在目录
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 with open("InstMemory.v", "r") as file:
