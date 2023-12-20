@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # 比较Y86-output文件夹和Y86-answer文件夹中的内容是否相同
 import os
 
@@ -10,7 +10,7 @@ answer_path = "./Y86-answer"
 output_files = os.listdir(output_path)
 answer_files = os.listdir(answer_path)
 
-error = False
+error = False # 用于标记是否出现错误
 for output_file in output_files:
     answer_file = output_file.replace(".yml", "")
     with open(os.path.join(output_path, output_file), "r") as output_file_IO:
@@ -18,6 +18,7 @@ for output_file in output_files:
     with open(os.path.join(answer_path, answer_file), "r") as answer_file_IO:
         answer_content = answer_file_IO.readlines()
 
+    # 比较两个文件的内容是否相同
     if output_content != answer_content:
         error = True
         print(

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 # 脚本功能：批量测试Y86程序
 import os
 import shutil
@@ -25,13 +25,13 @@ for yo_file in yo_files:
     with open("ROM.yo", "w") as ROM_file:
         ROM_file.write("".join(yo_content))
 
-    # 读取ROM.yo文件，裁剪其中的十六进制指令后生成`ROM.txt`文件
+    # 读取ROM.yo文件，裁剪其中的十六进制指令后生成ROM.txt文件
     os.system("python3 -u ROMgen.py")
     # 执行仿真，并将输出结果写入Y86-output.txt文件
     os.system(
         "iverilog -y $PWD arch.v -o bin/arch && cd bin && rm -f *.vcd && vvp arch > ../Y86-output.txt && rm arch && cd .."
     )
-    # 读取ROM_M.txt和Y86-output.txt文件，将其中的CPU状态转换为Y86-output.yml格式
+    # 读取ROM.txt和Y86-output.txt文件，将其中的内存和CPU状态转换为Y86-output.yml格式
     os.system("python3 -u Y86-output-yml.py")
 
     # 将Y86-output.yml文件重命名后移动到Y86-output文件夹中
@@ -43,7 +43,7 @@ for yo_file in yo_files:
         yml_file.write("".join(yml_content))
 
     # 移除之前生成的中间文件
-    os.system("rm -f ROM.txt ROM_M.txt Y86-output.txt Y86-output.yml")
+    os.system("rm -f ROM.txt Y86-output.txt Y86-output.yml")
 
 # 使用`Y86-output-check.py`逐个比较文件夹`Y86-output`和`Y86-answer`中的每个文件
 os.system("python3 -u Y86-output-check.py")

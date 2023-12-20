@@ -1,11 +1,20 @@
+# Y86-64单周期处理器设计
+
+
 Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)   
 项目源代码：[Invisiphantom/Y86-64-Single-Cycle](https://github.com/Invisiphantom/Y86-64-Single-Cycle)  
 项目环境配置：[IVerilog+VSCode环境配置 | Mind City](https://invisiphantom.github.io/Skill/IVerilog+VSCode%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)   
-项目代码解析：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/) 
-
+项目代码解析：[Y86-64单周期CPU设计 | Mind City](https://invisiphantom.github.io/Skill/Y86-64%E5%8D%95%E5%91%A8%E6%9C%9FCPU%E8%AE%BE%E8%AE%A1/)  
+  
+  
 - 相关项目
   - RISC-V单周期CPU：[Invisiphantom/RISC-V-SIngle-Cycle](https://github.com/Invisiphantom/RISC-V-SIngle-Cycle) 
   - RISC-V流水线CPU：[Invisiphantom/RISC-V-Pipeline](https://github.com/Invisiphantom/RISC-V-Pipeline) 
+
+
+------
+  
+
 ### 整体架构图(csapp P460)
 ![](img/Y86-64单周期CPU设计.png)
 - PC: 选择PCaddress的更新方式(累加or跳转)
@@ -40,17 +49,17 @@ Web模拟器: [y86-64 Simulator](https://boginw.github.io/js-y86-64/)
 A pushq : rRsp  | (rRsp - 8)  | rA => Mem    |  -> rRsp
 B popq  : rRsp  | (rRsp) + 8  | Mem -> rA    |  -> rA rRsp
 ```
-- 2 rrmovq 需要读取rA寄存器 需要计算rA+0 不需要读写内存 需要写回rB寄存器
-- 3 irmovq 不需要读取寄存器 需要计算valC+0 不需要读写内存 需要写回rB寄存器
-- 4 rmmovq 需要读取rA和rB寄存器 需要计算rB+valC 需要将rA寄存器的值写入(rB+valC)地址的内存处 不需要写回寄存器
-- 5 mrmovq 需要读取rB寄存器 需要计算rB+valC 需要读取(rB+valC)地址处的内存值 需要写回rA寄存器
-- 6 ops 需要读取rA和rB寄存器 需要计算rB+-&^rA 不需要读写内存 需要写回rB寄存器
+    - 2 rrmovq 需要读取rA寄存器 需要计算rA+0 不需要读写内存 需要写回rB寄存器
+    - 3 irmovq 不需要读取寄存器 需要计算valC+0 不需要读写内存 需要写回rB寄存器
+    - 4 rmmovq 需要读取rA和rB寄存器 需要计算rB+valC 需要将rA寄存器的值写入(rB+valC)地址的内存处 不需要写回寄存器
+    - 5 mrmovq 需要读取rB寄存器 需要计算rB+valC 需要读取(rB+valC)地址处的内存值 需要写回rA寄存器
+    - 6 ops 需要读取rA和rB寄存器 需要计算rB+-&^rA 不需要读写内存 需要写回rB寄存器
 
-- 7 jXX
-- 8 call 需要读取rRsp寄存器的值 需要计算rRsp-8 需要将valP写入(rRsp-8)地址处的内存 写回rRsp寄存器
-- 9 ret 需要读取rRsp寄存器的值 需要计算rRsp+8 需要读取(rRsp)地址处的内存 写回rRsp寄存器
-- A pushq 需要读取rA和rRsp寄存器的值 需要计算rRsp-8 需要将rA写入(rRsp-8)地址处的内存 需要写回rRsp寄存器
-- B popq 需要读取rRsp寄存器的值 需要计算rRsp+8 需要读取(rRsp)地址处的内存 写回rA和rRsp寄存器
+    - 7 jXX
+    - 8 call 需要读取rRsp寄存器的值 需要计算rRsp-8 需要将valP写入(rRsp-8)地址处的内存 写回rRsp寄存器
+    - 9 ret 需要读取rRsp寄存器的值 需要计算rRsp+8 需要读取(rRsp)地址处的内存 写回rRsp寄存器
+    - A pushq 需要读取rA和rRsp寄存器的值 需要计算rRsp-8 需要将rA写入(rRsp-8)地址处的内存 需要写回rRsp寄存器
+    - B popq 需要读取rRsp寄存器的值 需要计算rRsp+8 需要读取(rRsp)地址处的内存 写回rA和rRsp寄存器
 
 
 ```
@@ -74,22 +83,19 @@ fn Codes
 5 ge : SF == OF
 6 g  : ZF == 0 && SF == OF
 ```
-- 0 all (always)
-- 1 le	(less or equal)
-- 2 l	(less)
-- 3 e	(qeual)
-- 4 ne 	(not equal)
-- 5 ge 	(greater or equal)
-- 6 g	(greater)
 
 
 ### Verilog代码细节
 
-- PC: 选择PCaddress的更新方式，
-	- 默认更新为下一条指令的地址处
-	- jXX需要根据条件码来判断是否跳转到valC
-	- call直接跳转到valC地址处
-	- ret跳转到外层函数栈帧地址处
+
+#### PC
+选择PCaddress的更新方式   
+  - 默认更新为下一条指令的地址处
+  - jXX需要根据条件码来判断是否跳转到valC
+  - call直接跳转到valC地址处
+  - ret跳转到外层函数栈帧地址处  
+
+
 ```verilog
 module PC (
     input             clk,
@@ -131,7 +137,8 @@ module PC (
 endmodule
 ```
 
-- InstMemory: 从内存中取出PCaddress地址处的指令，并将其解析为对应的icode, ifun, rA, rB, valC
+#### InstMemory
+从内存中取出PCaddress地址处的指令，并将其解析为对应的icode, ifun, rA, rB, valC  
 ```verilog
 module InstMemory (
     input      [63:0] PCaddress,
@@ -195,7 +202,8 @@ module InstMemory (
 endmodule
 ```
 
-- PCIncre: 计算出下一条指令所在的内存地址valP
+#### PCIncre
+计算出下一条指令所在的内存地址valP  
 ```verilog
 module PCIncre (
     input [3:0] icode,
@@ -223,7 +231,8 @@ endmodule
 ```
 
 
-- Regs: 选择需要读取的寄存器和要写入的寄存器
+#### Regs
+选择需要读取的寄存器和要写入的寄存器  
 ```verilog
 module Regs (
     input clk,
@@ -327,7 +336,8 @@ module Regs (
 endmodule
 ```
 
-- ALU_fun: 选择ALU需要执行的运算
+#### ALU_fun
+选择ALU需要执行的运算  
 ```verilog
 module ALU_fun (
     input [3:0] icode,
@@ -350,7 +360,8 @@ module ALU_fun (
 endmodule
 ```
 
-- ALU_A: 选择ALU的数据A
+#### ALU_A
+选择ALU的A端的输入数据
 ```verilog
 module ALU_A (
     input [3:0] icode,
@@ -372,7 +383,8 @@ module ALU_A (
 endmodule
 ```
 
-- ALU_B: 选择ALU的数据B
+#### ALU_B
+选择ALU的B端的输入数据
 ```verilog
 module ALU_B (
     input [3:0] icode,
@@ -394,7 +406,8 @@ module ALU_B (
 endmodule
 ```
 
-- ALU: 执行运算并更新标志位
+#### ALU
+执行运算并更新标志位
 ```verilog
 module ALU (
     input clk,
@@ -440,7 +453,8 @@ module ALU (
 endmodule
 ```
 
-- CC: 根据标志位判断是否执行jXX或者cmovXX
+#### CC
+根据标志位判断是否执行jXX或者cmovXX
 ```verilog
 module CC (
     input [3:0] ifun,
@@ -464,7 +478,8 @@ module CC (
 endmodule
 ```
 
-- MemControl: 判断是否需要读写内存
+#### MemControl
+判断是否需要读写内存
 ```verilog
 module MemControl (
     input [3:0] icode,
@@ -494,7 +509,8 @@ module MemControl (
 endmodule
 ```
 
-- MemAddr: 选择读写内存的地址
+#### MemAddr
+选择读写内存的地址
 ```verilog
 module MemAddr (
     input [3:0] icode,
@@ -514,7 +530,8 @@ module MemAddr (
 endmodule
 ```
 
-- MemData: 选择需要写入内存的数据
+#### MemData
+选择需要写入内存的数据
 ```verilog
 module MemData (
     input [3:0] icode,
@@ -533,7 +550,8 @@ module MemData (
 endmodule
 ```
 
-- Mem: 执行内存的读写操作
+#### Mem
+执行内存的读写操作
 ```verilog
 module Mem (
     input memWrite,
@@ -576,7 +594,8 @@ module Mem (
 endmodule
 ```
 
-- Stat: 判断CPU是否出现运行时异常
+#### Stat
+判断CPU是否出现运行时异常
   - AOK: 正常运行
   - HLT: 执行HLT指令
   - ADR: 访问非法地址
@@ -602,8 +621,9 @@ module Stat (
 endmodule
 ```
 
-- arch: Y86-64单周期CPU顶层模块
-- arch_tb: 顶层模块的测试模块
+#### arch
+Y86-64单周期CPU顶层模块
+    - arch_tb: 顶层模块的测试模块
 ```verilog
 module arch (
     input clk
@@ -811,15 +831,31 @@ module arch_tb;
 endmodule
 ```
 
-### 使用Python脚本自动格式化输入输出
 
-> 使用方式：打开Y86-output-batch.py文件，使用`Ctrl+Alt+N`快速执行代码，如果测试输出与答案完全匹配，则终端输出`All tests passed!`
+### 使用Python脚本批量测试Y86程序
+
+> 运行代码前请先配置好WSL和IVerilog环境
+> 脚本使用方式：打开Y86-Setup.py文件，使用`Ctrl+Alt+N`快速执行代码，如果测试输出与答案完全匹配，则终端输出`All tests passed!`
+
+Y86-Setup.py顶层脚本整体功能：
+- 清空`Y86-output`文件夹
+- 使用`ROMpath.py`将`InstMemory.v`和`Mem.v`中的`$readmemh()`路径替换为当前目录下的绝对路径
+
+    - 循环取出`test`文件夹中的`.yo`文件并逐个拷贝到`ROM.yo`文件中
+    - 使用`ROMgen.py`读取`ROM.yo`中的内容，裁剪其中的十六进制汇编指令后生成`ROM.txt`文件
+    - 执行`iverilog`仿真，并将仿真结果写入到`Y86-output.txt`文件中
+    - 使用`Y86-output-yml.py`逐行将`Y86-output.txt`中的CPU运行状态转换为Yaml格式的`Y86-output.yml`文件
+    - 将`Y86-output.yml`文件重命名后放入`Y86-output`文件夹，并开始下一轮循环
+
+- 循环结束后使用`Y86-output-check.py`逐个比较文件夹`Y86-output`和`Y86-answer`中的每个文件，如果完全匹配则输出`All tests passed!`，否则输出`Test failed!`
 
 ```python
-#!/usr/bin/env python3
+#!/usr/bin/python3
+# 脚本功能：批量测试Y86程序
 import os
 import shutil
 
+# 将工作目录切换至当前文件所在目录
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 test_path = "./test"
@@ -830,34 +866,285 @@ output_path = "./Y86-output"
 shutil.rmtree(output_path)
 os.mkdir(output_path)
 
-# 将InstMemory.v和Mem.v中$readmemh()的ROM.txt路径替换为当前的绝对路径
-os.system("python3 -u ROMreplace.py")
+# 将InstMemory.v和Mem.v中的$readmemh()路径替换为当前目录下的绝对路径
+os.system("python3 -u ROMpath.py")
 
-# 对每个测试文件进行测试，并将结果保持到Y86-output文件夹中
+# 对test中的每个测试文件进行测试，并将仿真结果保存到Y86-output文件夹中
 for yo_file in yo_files:
-    # 将test文件夹中的测试文件复制到当前目录下
+    # 将test文件夹中的测试文件复制到当前目录下的ROM.yo
     with open(os.path.join(test_path, yo_file), "r") as yo_file_IO:
         yo_content = yo_file_IO.readlines()
-        
     with open("ROM.yo", "w") as ROM_file:
         ROM_file.write("".join(yo_content))
 
-    # 移除之前生成的文件
-    os.system("rm -f ROM.txt ROM_M.txt Y86-output.txt Y86-output.yml")
-    # 读取ROM.yo文件，将其中的汇编指令转换为ROM.txt和ROM_M.txt文件中的字节编码
-    os.system("python3 -u ROMdraw.py")
+    # 读取ROM.yo文件，裁剪其中的十六进制指令后生成ROM.txt文件
+    os.system("python3 -u ROMgen.py")
     # 执行仿真，并将输出结果写入Y86-output.txt文件
-    os.system("iverilog -y $PWD arch.v -o bin/arch && cd bin && rm -f *.vcd && vvp arch > ../Y86-output.txt && rm arch && cd ..")
-    # 读取ROM_M.txt和Y86-output.txt文件，将其中的状态转换为Y86-output.yml格式
-    os.system('python3 -u Y86-output.py')
-    
-    # 将Y86-output.yml文件中的内容保存到Y86-output文件夹中
+    os.system(
+        "iverilog -y $PWD arch.v -o bin/arch && cd bin && rm -f *.vcd && vvp arch > ../Y86-output.txt && rm arch && cd .."
+    )
+    # 读取ROM.txt和Y86-output.txt文件，将其中的内存和CPU状态转换为Y86-output.yml格式
+    os.system("python3 -u Y86-output-yml.py")
+
+    # 将Y86-output.yml文件重命名后移动到Y86-output文件夹中
     with open("Y86-output.yml", "r") as yml_file:
         yml_content = yml_file.readlines()
-
-    with open(os.path.join(output_path, yo_file.replace(".yo", ".yml")), "w") as yml_file:
+    with open(
+        os.path.join(output_path, yo_file.replace(".yo", ".yml")), "w"
+    ) as yml_file:
         yml_file.write("".join(yml_content))
 
-# 比较Y86-output文件夹和Y86-answer文件夹中的内容是否相同
-os.system('python3 -u Y86-output-diff.py')
+    # 移除之前生成的中间文件
+    os.system("rm -f ROM.txt Y86-output.txt Y86-output.yml")
+
+# 使用`Y86-output-check.py`逐个比较文件夹`Y86-output`和`Y86-answer`中的每个文件
+os.system("python3 -u Y86-output-check.py")
 ```
+
+
+### 脚本自动化的具体实现
+
+#### ROMpath.py
+
+由于IVerilog对于`$readmemh()`只支持文件的绝对路径，
+导致每次移植时都需要手动修改`InstMemory.v`和`Mem.v`中的ROM.txt路径
+
+所以编写了这个Python脚本`ROMpath.py`，用于自动修改InstMemory.v和Mem.v中的ROM.txt路径为当前目录下的绝对路径
+
+```python
+#!/usr/bin/python3
+# 将InstMemory.v和Mem.v中$readmemh()的ROM.txt路径替换为当前的绝对路径
+import os
+import re
+
+# 将工作目录切换至当前文件所在目录
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+# 替换InstMemory.v中的$readmemh()路径
+with open("InstMemory.v", "r") as file:
+    content = file.read()
+content = re.sub(
+    r'\$readmemh\(".*?ROM\.txt", inst_mem\);',
+    f'$readmemh("{os.getcwd()}/ROM.txt", inst_mem);',
+    content,
+)
+with open("InstMemory.v", "w") as file:
+    file.write(content)
+
+# 替换Mem.v中的$readmemh()路径
+with open("Mem.v", "r") as file:
+    content = file.read()
+content = re.sub(
+    r'\$readmemh\(".*?ROM\.txt", inst_mem\);',
+    f'$readmemh("{os.getcwd()}/ROM.txt", inst_mem);',
+    content,
+)
+with open("Mem.v", "w") as file:
+    file.write(content)
+```
+
+#### ROMgen.py
+
+由于Y86-64的指令长度不固定，所以需要对ROM.yo文件中的指令进行裁剪，只保留指令部分，然后将这些十六进制指令按照每行一个字节的格式写入ROM.txt文件中
+
+```python
+#!/usr/bin/python3
+# 读取ROM.yo文件中的内容，裁剪其中的十六进制汇编指令生成ROM.txt文件
+import os
+
+# 将工作目录切换至当前文件所在目录
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+
+files = os.listdir(".")
+yo_files = [file for file in files if file.endswith(".yo")]
+
+for yo_file in yo_files:
+    with open(yo_file, "r") as yo_file:
+        yo_content = yo_file.readlines()
+
+    txt_file = yo_file.name.replace(".yo", ".txt")
+    with open(txt_file, "w") as txt_file:
+        # 首先写入1024行的 00
+        ROM_content = ["00" for _ in range(1024)]
+
+        for line in yo_content:
+            # 取出每行的地址和指令部分
+            add_inst = line.split("|")[0].split(":")
+            # 如果不是有效行(由":"分割地址和指令)，则跳过
+            if len(add_inst) != 2:
+                continue
+            # 获取地址和指令
+            hex_address = add_inst[0].strip()
+            hex_instruction = add_inst[1].strip()
+            dec_address = int(hex_address, 16)
+            # 在ROM_content中的对应地址位置覆盖写入指令
+            for i in range(0, int(len(hex_instruction) / 2)):
+                ROM_content[dec_address + i] = hex_instruction[i * 2 : i * 2 + 2]
+
+        txt_file.write("\n".join(ROM_content))
+```
+
+#### Y86-output-yml.py
+
+由于Verilog的`$monitor()`和`$display`输出格式有限，不方便直接输出Yaml格式  
+所以编写了这个Python脚本`Y86-output-yml.py`，用于将Y86-output.txt中的内存状态和CPU运行状态转换为Yaml格式的Y86-output.yml文件
+
+```python
+#!/usr/bin/python3
+# 读取ROM.txt和Y86-output.txt文件
+# 将其中的CPU和内存状态转换为Y86-output.yml格式
+import os
+
+# 将工作目录切换至当前文件所在目录
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+# 字典State用于存储CPU的状态值
+# 字典Mem用于存储内存的值
+State = {}
+Mem = {}
+
+
+# 从ROM.txt读取内存中存储的原始指令数据
+ROM_file = "ROM.txt"
+with open(ROM_file, "r") as ROM_file:
+    ROM_content = ROM_file.readlines()
+    for i in range(0, int(len(ROM_content) / 8)):
+        # 小端法存储的指令需要逆序读取
+        hex_line = "".join(ROM_content[i * 8 : i * 8 + 8][::-1])
+        hex_line = hex_line.replace("\n", "")
+        # 将这个64bits的十六进制整数转换为无符号整数
+        signed_num = int(hex_line, 16)
+        # 如果最高位为1，需要转换为负数
+        if signed_num & 0x8000000000000000:
+            signed_num = signed_num - 0x10000000000000000
+        if signed_num == 0:
+            continue
+        # 将这个有符号整数转换为字符串，存储到Mem字典中
+        Mem[str(i * 8)] = str(signed_num)
+
+
+# 从Y86-output.txt中读取CPU的状态值
+output_file = "Y86-output.txt"
+with open(output_file, "r") as output_file:
+    content = output_file.readlines()
+
+# 将CPU和内存的状态写入Y86-output.yml文件中
+yaml_file = output_file.name.replace(".txt", ".yml")
+with open(yaml_file, "w") as yaml_content:
+    for i in range(2, len(content)):
+        line = content[i].split()
+        # 读取内存每次修改后发生的变化
+        if line[0] == "mem":
+            if int(line[2]) == 0:
+                continue
+            Mem[line[1]] = line[2]
+
+        if line[0] != "mem":
+            State["PC"] = line[0]
+            State["rax"] = line[1]
+            State["rcx"] = line[2]
+            State["rdx"] = line[3]
+            State["rbx"] = line[4]
+            State["rsp"] = line[5]
+            State["rbp"] = line[6]
+            State["rsi"] = line[7]
+            State["rdi"] = line[8]
+            State["r8"] = line[9]
+            State["r9"] = line[10]
+            State["r10"] = line[11]
+            State["r11"] = line[12]
+            State["r12"] = line[13]
+            State["r13"] = line[14]
+            State["r14"] = line[15]
+            State["ZF"] = line[16]
+            State["SF"] = line[17]
+            State["OF"] = line[18]
+            State["STAT"] = line[19]
+            yaml_content.write("- PC: " + State["PC"] + "\n")
+            yaml_content.write("  REG:\n")
+            yaml_content.write("    rax: " + State["rax"] + "\n")
+            yaml_content.write("    rcx: " + State["rcx"] + "\n")
+            yaml_content.write("    rdx: " + State["rdx"] + "\n")
+            yaml_content.write("    rbx: " + State["rbx"] + "\n")
+            yaml_content.write("    rsp: " + State["rsp"] + "\n")
+            yaml_content.write("    rbp: " + State["rbp"] + "\n")
+            yaml_content.write("    rsi: " + State["rsi"] + "\n")
+            yaml_content.write("    rdi: " + State["rdi"] + "\n")
+            yaml_content.write("    r8: " + State["r8"] + "\n")
+            yaml_content.write("    r9: " + State["r9"] + "\n")
+            yaml_content.write("    r10: " + State["r10"] + "\n")
+            yaml_content.write("    r11: " + State["r11"] + "\n")
+            yaml_content.write("    r12: " + State["r12"] + "\n")
+            yaml_content.write("    r13: " + State["r13"] + "\n")
+            yaml_content.write("    r14: " + State["r14"] + "\n")
+            yaml_content.write("  MEM:\n")
+            
+            # 按照地址从小到大输出内存值
+            for address in sorted(Mem.keys(), key=lambda x: int(x)):
+                yaml_content.write("    " + address + ": " + Mem[address] + "\n")
+
+            yaml_content.write("  CC:\n")
+            yaml_content.write("    ZF: " + State["ZF"] + "\n")
+            yaml_content.write("    SF: " + State["SF"] + "\n")
+            yaml_content.write("    OF: " + State["OF"] + "\n")
+            yaml_content.write("  STAT: " + State["STAT"] + "\n")
+```
+
+#### Y86-output-check.py
+
+使用Python脚本`Y86-output-check.py`逐个比较文件夹`Y86-output`和`Y86-answer`中的每个文件，如果完全匹配则输出`All tests passed!`，否则输出`Test failed!`
+
+```python
+#!/usr/bin/python3
+# 比较Y86-output文件夹和Y86-answer文件夹中的内容是否相同
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+output_path = "./Y86-output"
+answer_path = "./Y86-answer"
+
+output_files = os.listdir(output_path)
+answer_files = os.listdir(answer_path)
+
+error = False # 用于标记是否出现错误
+for output_file in output_files:
+    answer_file = output_file.replace(".yml", "")
+    with open(os.path.join(output_path, output_file), "r") as output_file_IO:
+        output_content = output_file_IO.readlines()
+    with open(os.path.join(answer_path, answer_file), "r") as answer_file_IO:
+        answer_content = answer_file_IO.readlines()
+
+    # 比较两个文件的内容是否相同
+    if output_content != answer_content:
+        error = True
+        print(
+            "Error: "
+            + output_file
+            + " is different from "
+            + output_file.replace(".yml", "")
+        )
+
+if error == True:
+    print("Test failed!")
+else:
+    print("All tests passed!")
+```
+
+
+### 使用Bash脚本快速调试仿真单个Y86程序
+
+> 运行代码前请先配置好WSL和IVerilog环境
+
+由于每次调试单个Y86程序都需要手动执行一系列命令，所以编写了这个Bash脚本`zcmd.sh`  
+方便快速调试Verilog仿真单个Y86程序
+
+```bash
+rm -f ROM.txt ROM_M.txt Y86-output.txt Y86-output.yml
+python3 -u ROMgen.py
+iverilog -y $PWD arch.v -o bin/arch && cd bin && rm -f *.vcd && vvp arch > ../Y86-output.txt && rm arch && cd ..
+python3 -u Y86-output-yml.py
+cd bin && gtkwave wave.vcd && cd ..
+```
+
