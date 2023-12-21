@@ -2,6 +2,7 @@
 # 读取ROM.txt和Y86-output.txt文件
 # 将其中的CPU和内存状态转换为Y86-output.yml格式
 import os
+import sys
 
 # 将工作目录切换至当前文件所在目录
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -43,8 +44,13 @@ with open(yaml_file, "w") as yaml_content:
         line = content[i].split()
         # 读取内存每次修改后发生的变化
         if line[0] == "mem":
-            if int(line[2]) == 0:
-                continue
+            try:
+                if int(line[2]) == 0:
+                    continue
+            except ValueError as e:
+                print(f"Caught exception: {e}")
+                print(line)
+                sys.exit(1)
             Mem[line[1]] = line[2]
 
         if line[0] != "mem":
@@ -86,7 +92,7 @@ with open(yaml_file, "w") as yaml_content:
             yaml_content.write("    r13: " + State["r13"] + "\n")
             yaml_content.write("    r14: " + State["r14"] + "\n")
             yaml_content.write("  MEM:\n")
-            
+
             # 按照地址从小到大输出内存值
             for address in sorted(Mem.keys(), key=lambda x: int(x)):
                 yaml_content.write("    " + address + ": " + Mem[address] + "\n")
