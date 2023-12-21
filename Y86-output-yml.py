@@ -44,13 +44,8 @@ with open(yaml_file, "w") as yaml_content:
         line = content[i].split()
         # 读取内存每次修改后发生的变化
         if line[0] == "mem":
-            try:
-                if int(line[2]) == 0:
-                    continue
-            except ValueError as e:
-                print(f"Caught exception: {e}")
-                print(line)
-                sys.exit(1)
+            if int(line[2]) == 0:
+                continue
             Mem[line[1]] = line[2]
 
         if line[0] != "mem":

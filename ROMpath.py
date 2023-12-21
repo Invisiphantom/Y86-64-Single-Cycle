@@ -21,8 +21,8 @@ with open("InstMemory.v", "w") as file:
 with open("Mem.v", "r") as file:
     content = file.read()
 content = re.sub(
-    r'\$readmemh\(".*?ROM\.txt", inst_mem\);',
-    f'$readmemh("{os.getcwd()}/ROM.txt", inst_mem);',
+    r'\$readmemh\(".*?ROM\.txt", mem\);',
+    f'$readmemh("{os.getcwd()}/ROM.txt", mem);',
     content,
 )
 with open("Mem.v", "w") as file:
