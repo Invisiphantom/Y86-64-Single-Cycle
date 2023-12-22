@@ -1,5 +1,5 @@
 $date
-	Thu Dec 21 10:59:29 2023
+	Fri Dec 22 20:29:17 2023
 $end
 $version
 	Icarus Verilog
@@ -168,21 +168,23 @@ $var wire 64 2" valE [63:0] $end
 $var wire 64 3" valM [63:0] $end
 $var reg 64 4" valA [63:0] $end
 $var reg 64 5" valB [63:0] $end
+$var integer 32 6" i [31:0] $end
 $upscope $end
 $scope module u_Stat $end
 $var wire 1 G dmem_error $end
-$var wire 4 6" icode [3:0] $end
+$var wire 4 7" icode [3:0] $end
 $var wire 1 " imem_error $end
 $var wire 1 D instr_valid $end
-$var reg 3 7" stat [2:0] $end
+$var reg 3 8" stat [2:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
-b1 7"
-b11 6"
+b1 8"
+b11 7"
+b10000 6"
 bx 5"
 bx 4"
 bx 3"
@@ -355,7 +357,7 @@ b1000 p
 b1000 q
 b1000 |
 b1000 ~
-b1000 6"
+b1000 7"
 b10000000001000000000000000000000000000000000000000000000000000000000000000110000 b
 b10011 '
 b10011 x
@@ -414,7 +416,7 @@ b1001 p
 b1001 q
 b1001 |
 b1001 ~
-b1001 6"
+b1001 7"
 b101001 B
 b101001 i
 b101001 t
@@ -487,7 +489,7 @@ b11 p
 b11 q
 b11 |
 b11 ~
-b11 6"
+b11 7"
 b110000111100100000101000000000000000000000000000000000000000000000000000000000 b
 b11101 '
 b11101 x
@@ -529,7 +531,7 @@ b0 p
 b0 q
 b0 |
 b0 ~
-b0 6"
+b0 7"
 b10010000001000000010001100000000000000000000000000000000 b
 b11101 '
 b11101 x
@@ -569,12 +571,12 @@ bx p
 bx q
 bx |
 bx ~
-bx 6"
+bx 7"
 bx b
 b10 .
 b10 a
 b10 y
-b10 7"
+b10 8"
 #40
 0!
 #45

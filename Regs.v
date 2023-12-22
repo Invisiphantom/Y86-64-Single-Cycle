@@ -24,24 +24,10 @@ module Regs (
     output [63:0] r13,
     output [63:0] r14
 );
+
+    integer i;
     reg [63:0] Register[0:15];
-    initial begin
-        Register[0]  = 64'h0;
-        Register[1]  = 64'h0;
-        Register[2]  = 64'h0;
-        Register[3]  = 64'h0;
-        Register[4]  = 64'h0;
-        Register[5]  = 64'h0;
-        Register[6]  = 64'h0;
-        Register[7]  = 64'h0;
-        Register[8]  = 64'h0;
-        Register[9]  = 64'h0;
-        Register[10] = 64'h0;
-        Register[11] = 64'h0;
-        Register[12] = 64'h0;
-        Register[13] = 64'h0;
-        Register[14] = 64'h0;
-    end
+    initial for (i = 0; i < 16; i = i + 1) Register[i] = 64'h0;
 
     always @(*) begin
         case (icode)
